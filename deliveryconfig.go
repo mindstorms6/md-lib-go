@@ -862,6 +862,21 @@ func (p *DeliveryConfigProcessor) Delete(cli *Client) error {
 	return err
 }
 
+// GetDeliveryConfigYamlDeAnchored will read the current delivery config and de-anchor it. Useful for debugging to view what's actually being submitted
+func (p *DeliveryConfigProcessor) GetDeliveryConfigYamlDeAnchored() ([]byte, error) {
+	if p.rawDeliveryConfig == nil {
+		err := p.Load()
+		if err != nil {
+			return nil, xerrors.Errorf("Failed to load delivery config: %w", err)
+		}
+	}
+	output, err := p.yamlMarshal(p.deliveryConfig)
+	if err != nil {
+		return nil, xerrors.Errorf("unmarshal delivery config YAML: %w", err)
+	}
+	return output, nil
+}
+
 // ValidationErrorDetail is the structure of the document from /managed/delivery-configs/validate API
 type ValidationErrorDetail struct {
 	Error   string `json:"error"`
